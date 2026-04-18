@@ -31,11 +31,11 @@ final class NoteTabPanel: NSPanel {
         self.TW = TW
         self.defaultW = W
         self.defaultH = H
-        // 讀取上次儲存的尺寸，沒有則用預設值
+        // 讀取上次儲存的尺寸，確保不小於目前預設值（舊版存的較小尺寸會自動升級）
         let savedW = UserDefaults.standard.double(forKey: "noteW_\(note.id.uuidString)")
         let savedH = UserDefaults.standard.double(forKey: "noteH_\(note.id.uuidString)")
-        self.expandedW = savedW > 0 ? CGFloat(savedW) : W
-        self.expandedH = savedH > 0 ? CGFloat(savedH) : H
+        self.expandedW = savedW > 0 ? max(CGFloat(savedW), W) : W
+        self.expandedH = savedH > 0 ? max(CGFloat(savedH), H) : H
 
         super.init(contentRect: .zero,
                    styleMask: [.borderless, .nonactivatingPanel, .fullSizeContentView, .resizable],

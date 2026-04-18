@@ -4,11 +4,11 @@ import Combine
 final class NoteTabManager {
 
     // Layout constants
-    let W:  CGFloat = 260   // expanded width
+    let W:  CGFloat = 320   // expanded width（需容納工具列約 275px card 內容）
     let H:  CGFloat = 160   // note tab height
     let TW: CGFloat = 42    // tab strip width — 42px visible on edge
     let SP: CGFloat = 6     // gap between tabs
-    let AH: CGFloat = 32    // add-button height
+    let AH: CGFloat = 44    // add-button height（New Note 按鈕）
 
     private var currentScreen: NSScreen
     private var currentEdge:   Edge
@@ -50,9 +50,8 @@ final class NoteTabManager {
     private func build() {
         for note in noteStore.notes { createTab(for: note) }
         addPanel = AddNotePanel(screen: currentScreen, edge: currentEdge,
-                                appState: appState, W: W, AH: AH, TW: TW) { [weak self] in
-            self?.noteStore.addNote()
-        }
+                                appState: appState, W: W, AH: AH, TW: TW,
+                                onAdd: { [weak self] in self?.noteStore.addNote() })
         addPanel?.onDrag = { [weak self] deltaY, mouseX in
             self?.handleDrag(deltaY: deltaY, mouseX: mouseX)
         }
@@ -149,7 +148,7 @@ final class NoteTabManager {
 
     func attach(to screen: NSScreen, edge: Edge) {
         currentScreen  = screen; currentEdge = edge; appState.edge = edge
-        persistedAddY  = nil    // reset to auto-position on new screen
+        persistedAddY  = nil
         UserDefaults.standard.removeObject(forKey: "addPanelY")
         for p in noteTabs.values { p.orderOut(nil) }
         noteTabs.removeAll()
